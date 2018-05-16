@@ -8,6 +8,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml;
 using System.Diagnostics;
 using System.IO;
+using DocumentFormat.OpenXml.Validation;
 
 namespace ConsoleApp1
 {
@@ -35,19 +36,41 @@ namespace ConsoleApp1
                     workbookPart.Workbook = new Workbook();
                     WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
                     Worksheet worksheet = worksheetPart.Worksheet = new Worksheet();
+
                     //worksheetPart.Worksheet.Save();
 
                     Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
 
-                    Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart),
-                        SheetId = 1, Name = "Report" };
+                    Sheet sheet = new Sheet()
+                    {
+                        Id = workbookPart.GetIdOfPart(worksheetPart),
+                        SheetId = 1,
+                        Name = "Report"
+                    };
                     sheets.Append(sheet);
+
+                    Columns columns = new Columns();
+                    for (uint i = 0; i < 19; i++)
+                        columns.AppendChild(new Column
+                        {
+                            Min = i + 1,
+                            Max = i + 1,
+                            Width = 15,
+                            BestFit = true,
+                            //CustomWidth = true
+
+                        });
+
+                    worksheet.AppendChild(columns);
+
                     workbookPart.Workbook.Save();
 
                     WorkbookStylesPart stylePart = workbookPart.AddNewPart<WorkbookStylesPart>();
                     stylePart.Stylesheet = ExcelUtils.GenerateStylesheet();
                     stylePart.Stylesheet.Save();
-                    
+
+
+
                     SheetData sheetData = worksheetPart.Worksheet.AppendChild(new SheetData());
                     Row row = new Row();
                     MergeCells mergeCells;
@@ -67,11 +90,17 @@ namespace ConsoleApp1
                         ExcelUtils.ConstructCell("Инвентарный номер", CellValues.String, 2),
                         ExcelUtils.ConstructCell("КФО", CellValues.String, 2),
                         ExcelUtils.ConstructCell("Сальдо на начало периода", CellValues.String, 2),
-                        ExcelUtils.ConstructCell("", CellValues.String, 2),
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
                         ExcelUtils.ConstructCell("Обороты за период", CellValues.String, 2),
-                        ExcelUtils.ConstructCell("", CellValues.String, 1),
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
                         ExcelUtils.ConstructCell("Сальдо на конец периода", CellValues.String, 2),
-                        ExcelUtils.ConstructCell("", CellValues.String, 0),
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
                         ExcelUtils.ConstructCell("Расположение", CellValues.String, 2),
                         ExcelUtils.ConstructCell("Комментарий", CellValues.String, 2),
                         ExcelUtils.ConstructCell("Дата обновления", CellValues.String, 2)
@@ -79,29 +108,70 @@ namespace ConsoleApp1
                     sheetData.Append(row);
                     row = new Row();
                     row.Append(
-                        ExcelUtils.ConstructCell("", CellValues.Number),
-                        ExcelUtils.ConstructCell("", CellValues.Number),
-                        ExcelUtils.ConstructCell("", CellValues.Number),
-                        ExcelUtils.ConstructCell("", CellValues.Number),
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
                         ExcelUtils.ConstructCell("Дебет", CellValues.String, 2),
+                        new Cell() { StyleIndex = 2 },
                         ExcelUtils.ConstructCell("Кредит", CellValues.String, 2),
+                        new Cell() { StyleIndex = 2 },
                         ExcelUtils.ConstructCell("Дебет", CellValues.String, 2),
+                        new Cell() { StyleIndex = 2 },
                         ExcelUtils.ConstructCell("Кредит", CellValues.String, 2),
+                        new Cell() { StyleIndex = 2 },
                         ExcelUtils.ConstructCell("Дебет", CellValues.String, 2),
-                        ExcelUtils.ConstructCell("Кредит", CellValues.String, 2));
+                        new Cell() { StyleIndex = 2 },
+                        ExcelUtils.ConstructCell("Кредит", CellValues.String, 2),
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 }
+                        );
                     sheetData.Append(row);
-                    //Console.WriteLine(row.GetFirstChild<Cell>().CellReference);
+
+                    row = new Row();
+                    row.Append(
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
+                        ExcelUtils.ConstructCell("Сумма", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Количество", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Сумма", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Количество", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Сумма", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Количество", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Сумма", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Количество", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Сумма", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Количество", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Сумма", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Количество", CellValues.String, 2),
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 },
+                        new Cell() { StyleIndex = 2 });
+                    sheetData.Append(row);
+
+
+
                     List<MergeCell> mergeCellsList = new List<MergeCell>() {
-                        new MergeCell { Reference = "A1:A2" },
-                        new MergeCell {Reference = "B1:B2"},
-                        new MergeCell {Reference = "C1:C2"},
-                        new MergeCell {Reference = "D1:D2"},
-                        new MergeCell {Reference = "E1:F1"},
-                        new MergeCell {Reference = "G1:H1"},
-                        new MergeCell {Reference = "I1:J1"},
-                        new MergeCell {Reference = "K1:K2"},
-                        new MergeCell {Reference = "L1:L2"},
-                        new MergeCell {Reference = "M1:M2"}
+                        new MergeCell { Reference = "A1:A3" },
+                        new MergeCell {Reference = "B1:B3"},
+                        new MergeCell {Reference = "C1:C3"},
+                        new MergeCell {Reference = "D1:D3"},
+                        new MergeCell {Reference = "E1:H1"},
+                        new MergeCell {Reference = "I1:L1"},
+                        new MergeCell {Reference = "M1:P1"},
+                        new MergeCell {Reference = "Q1:Q3"},
+                        new MergeCell {Reference = "R1:R3"},
+                        new MergeCell {Reference = "S1:S3"},
+                        new MergeCell {Reference = "E2:F2"},
+                        new MergeCell {Reference = "G2:H2"},
+                        new MergeCell {Reference = "I2:J2"},
+                        new MergeCell {Reference = "K2:L2"},
+                        new MergeCell {Reference = "M2:N2"},
+                        new MergeCell {Reference = "O2:P2"}
 
                     };
                     mergeCells.Append(mergeCellsList);
@@ -120,71 +190,47 @@ namespace ConsoleApp1
             }
         }
 
-        public void WriteExcelDoc()
+        private Row CreateRowFromDataset(Dataset dataset)
+        {
+            Row row = new Row();
+
+            row.Append(
+                ExcelUtils.ConstructCell(dataset.Invoice, CellValues.String, 1),
+                ExcelUtils.ConstructCell(dataset.Name, CellValues.String, 1),
+                ExcelUtils.ConstructCell(dataset.InventoryNumber,
+                dataset.InventoryNumber.All(Char.IsDigit) ? CellValues.Number : CellValues.String,
+                1),
+                ExcelUtils.ConstructCell(dataset.KFO, CellValues.Number, 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.debit.sum).Replace(',', '.'), 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.debit.amount).Replace(',', '.'), 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.credit.sum).Replace(',', '.'), 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.credit.amount).Replace(',', '.'), 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.debit.sum).Replace(',', '.'), 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.debit.amount).Replace(',', '.'), 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.credit.sum).Replace(',', '.'), 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.credit.amount).Replace(',', '.'), 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.debit.sum).Replace(',', '.'), 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.debit.amount).Replace(',', '.'), 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.credit.sum).Replace(',', '.'), 1),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.credit.amount).Replace(',', '.'), 1),
+                new Cell() { StyleIndex = 1 },
+                new Cell() { StyleIndex = 1 },
+                new Cell() { StyleIndex = 1 }
+                );
+            return row;
+        }
+
+        public void WriteDataToExcelDoc(List<Dataset> datasets)
         {
             try
             {
                 using (SpreadsheetDocument document = SpreadsheetDocument.Open(path, true))
                 {
                     WorksheetPart worksheetPart = document.WorkbookPart.WorksheetParts.FirstOrDefault();
-                    Worksheet worksheet = worksheetPart.Worksheet;
                     SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
-                    Row row = new Row();
-                    MergeCells mergeCells;
-                    if (worksheet.Elements<MergeCells>().Count() > 0)
-                        mergeCells = worksheet.Elements<MergeCells>().First();
-                    else
-                    {
-                        mergeCells = new MergeCells();
-                        if (worksheet.Elements<CustomChartsheetView>().Count() > 0)
-                            worksheet.InsertAfter(mergeCells, worksheet.Elements<CustomChartsheetView>().First());
-                        else
-                            worksheet.InsertAfter(mergeCells, worksheet.Elements<SheetData>().First());
-                    }
-                    row.Append(
-                        ExcelUtils.ConstructCell("Счёт", CellValues.String),
-                        ExcelUtils.ConstructCell("Наименование", CellValues.String),
-                        ExcelUtils.ConstructCell("Инвентарный номер", CellValues.String),
-                        ExcelUtils.ConstructCell("КФО", CellValues.String),
-                        ExcelUtils.ConstructCell("Сальдо на начало периода", CellValues.String),
-                        ExcelUtils.ConstructCell("", CellValues.String),
-                        ExcelUtils.ConstructCell("Обороты за период", CellValues.String),
-                        ExcelUtils.ConstructCell("", CellValues.String),
-                        ExcelUtils.ConstructCell("Сальдо на конец периода", CellValues.String),
-                        ExcelUtils.ConstructCell("", CellValues.String),
-                        ExcelUtils.ConstructCell("Расположение", CellValues.String),
-                        ExcelUtils.ConstructCell("Комментарий", CellValues.String),
-                        ExcelUtils.ConstructCell("Дата обновления", CellValues.String)
-                        );
-                    sheetData.Append(row);
-                    row = new Row();
-                    row.Append(
-                        ExcelUtils.ConstructCell("", CellValues.Number),
-                        ExcelUtils.ConstructCell("", CellValues.Number),
-                        ExcelUtils.ConstructCell("", CellValues.Number),
-                        ExcelUtils.ConstructCell("", CellValues.Number),
-                        ExcelUtils.ConstructCell("Дебет", CellValues.String),
-                        ExcelUtils.ConstructCell("Кредит", CellValues.String),
-                        ExcelUtils.ConstructCell("Дебет", CellValues.String),
-                        ExcelUtils.ConstructCell("Кредит", CellValues.String),
-                        ExcelUtils.ConstructCell("Дебет", CellValues.String),
-                        ExcelUtils.ConstructCell("Кредит", CellValues.String));
-                    sheetData.Append(row);
-                    //Console.WriteLine(row.GetFirstChild<Cell>().CellReference);
-                    List<MergeCell> mergeCellsList = new List<MergeCell>() {
-                        new MergeCell { Reference = "A1:A2" },
-                        new MergeCell {Reference = "B1:B2"},
-                        new MergeCell {Reference = "C1:C2"},
-                        new MergeCell {Reference = "D1:D2"},
-                        new MergeCell {Reference = "E1:F1"},
-                        new MergeCell {Reference = "G1:H1"},
-                        new MergeCell {Reference = "I1:J1"},
-                        new MergeCell {Reference = "K1:K2"},
-                        new MergeCell {Reference = "L1:L2"},
-                        new MergeCell {Reference = "M1:M2"}
-
-                    };
-                    mergeCells.Append(mergeCellsList);
+                    //datasets.Where(a => a.Name.Contains("Расходомер"))
+                    foreach (var ds in datasets)
+                        sheetData.AppendChild(CreateRowFromDataset(ds));
 
                     worksheetPart.Worksheet.Save();
 
@@ -200,7 +246,34 @@ namespace ConsoleApp1
             }
         }
 
+        public void ExcelValidate()
+        {
+            try
 
+            {
+
+                OpenXmlValidator validator = new OpenXmlValidator();
+
+                int count = 0;
+
+                foreach (ValidationErrorInfo error in validator.Validate(SpreadsheetDocument.Open(path, true)))
+                {
+
+                    count++;
+                    Console.WriteLine("Error " + count);
+                    Console.WriteLine("Description: " + error.Description);
+                    Console.WriteLine("Path: " + error.Path.XPath);
+                    Console.WriteLine("Part: " + error.Part.Uri);
+                    Console.WriteLine("-------------------------------------------");
+                }
+                Console.ReadKey();
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
 
         public List<Dataset> ReadExcelDoc()
         {

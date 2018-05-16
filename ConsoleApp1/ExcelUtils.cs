@@ -77,11 +77,21 @@ namespace ConsoleApp1
         {
             return new Cell()
             {
-                CellValue = new CellValue(value),
+                CellValue = value == "0" ? new CellValue() : new CellValue(value),
                 DataType = new EnumValue<CellValues>(dataType),
                 StyleIndex = styleIndex
             };
         }
+
+        public static Cell ConstructCell(string value, uint styleIndex = 0)
+        {
+            return new Cell()
+            {
+                CellValue = value == "0" ? new CellValue() : new CellValue(value),
+                StyleIndex = styleIndex
+            };
+        }
+
         public static Stylesheet GenerateStylesheet()
         {
             Stylesheet styleSheet = null;
@@ -97,18 +107,22 @@ namespace ConsoleApp1
                 new Font( // Index 1 - header
                     new FontSize() { Val = 10 },
                     new Bold(),
-                    new Color() { Rgb = "FFFFFF" },
-                    new FontName() { Val = "Times New Roman" },
-                    new Alignment() { Horizontal = HorizontalAlignmentValues.CenterContinuous,
-                        Vertical = VerticalAlignmentValues.Center }
+                    new Color() { Rgb = "FFFFFFFF" },
+                    new FontName() { Val = "Times New Roman" }
+
+
 
                 ));
 
             Fills fills = new Fills(
                     new Fill(new PatternFill() { PatternType = PatternValues.None }), // Index 0 - default
                     new Fill(new PatternFill() { PatternType = PatternValues.Gray125 }), // Index 1 - default
-                    new Fill(new PatternFill(new ForegroundColor { Rgb = new HexBinaryValue() { Value = "66666666" } })
-                    { PatternType = PatternValues.Solid }) // Index 2 - header
+                    new Fill(new PatternFill(new ForegroundColor { Rgb = new HexBinaryValue() { Value = "FF4472C4" } })
+                    { PatternType = PatternValues.Solid }), // Index 2 - header
+                    new Fill(new PatternFill(new ForegroundColor { Rgb = new HexBinaryValue() { Value = "FFFF0000"} })
+                    { PatternType = PatternValues.Solid}),
+                    new Fill(new PatternFill(new ForegroundColor { Rgb = new HexBinaryValue() { Value = "FF00FF00" } })
+                    { PatternType = PatternValues.Solid })
                 );
 
             Borders borders = new Borders(
@@ -124,7 +138,13 @@ namespace ConsoleApp1
             CellFormats cellFormats = new CellFormats(
                     new CellFormat(), // default
                     new CellFormat { FontId = 0, FillId = 0, BorderId = 1, ApplyBorder = true }, // body
-                    new CellFormat { FontId = 1, FillId = 2, BorderId = 1, ApplyFill = true } // header
+                    new CellFormat(
+                        new Alignment()
+                        {
+                            Horizontal = HorizontalAlignmentValues.CenterContinuous,
+                            Vertical = VerticalAlignmentValues.Center
+                        })
+                    { FontId = 1, FillId = 2, BorderId = 1, ApplyFill = true } // header
                 );
 
             styleSheet = new Stylesheet(fonts, fills, borders, cellFormats);

@@ -112,14 +112,14 @@ namespace ConsoleApp1
                     ds.turnover.credit.amount = Convert.ToInt32(ExcelUtils.GetCellText(r, "AA"));
                     ds.endPeriodBalance.debit.amount = Convert.ToInt32(ExcelUtils.GetCellText(r, "AF"));
                     ds.endPeriodBalance.credit.amount = 0;
-
+                    
                     r = ExcelUtils.GetRow(sheetData, i += 1);
                     ds.InventoryNumber = ExcelUtils.GetCell(r, "A").DataType == "s" ?
-                        ExcelUtils.FindStringValue(sharedStringPart, Convert.ToInt32(ExcelUtils.GetCellText(r, "A"))) :
-                        ExcelUtils.GetCellText(r, "A");
+                        ExcelUtils.FindStringValue(sharedStringPart, Convert.ToInt32(ExcelUtils.GetCellText(r, "A"))).Trim(' ') :
+                        ExcelUtils.GetCellText(r, "A").Trim(' ');
 
                     r = ExcelUtils.GetRow(sheetData, i += 2);
-                    ds.KFO = ExcelUtils.GetCellText(r, "A");
+                    ds.KFO = ExcelUtils.GetCellText(r, "A").Trim(' ') ;
                     datasets.Add(ds);
                 }
                 return datasets;
@@ -157,14 +157,14 @@ namespace ConsoleApp1
                 string endMarker = "Итого";
                 uint lastRow = FindRowIndexByMarker(document, endMarker);
 
-                string invoice = ExcelUtils.GetRow(sheetData, firstRow + 2).Elements<Cell>().FirstOrDefault().DataType == "s"?
+                string invoice = ExcelUtils.GetRow(sheetData, firstRow + 2).Elements<Cell>().FirstOrDefault().DataType == "s" ?
                     ExcelUtils.FindStringValue(sharedStringPart,
-                    Convert.ToInt32(ExcelUtils.GetRow(sheetData, firstRow + 2).Elements<Cell>().FirstOrDefault().CellValue.Text)):
+                    Convert.ToInt32(ExcelUtils.GetRow(sheetData, firstRow + 2).Elements<Cell>().FirstOrDefault().CellValue.Text)) :
                     ExcelUtils.GetRow(sheetData, firstRow + 2).Elements<Cell>().FirstOrDefault().CellValue.Text;
 
                 datasets = new List<Dataset>();
 
-                for (uint i = firstRow + 4; i < lastRow; i ++)
+                for (uint i = firstRow + 4; i < lastRow; i++)
                 {
                     Console.WriteLine("Строка {0}", i);
                     Dataset ds = new Dataset();
@@ -179,14 +179,14 @@ namespace ConsoleApp1
                     ds.endPeriodBalance.debit.sum = Convert.ToDouble(ExcelUtils.GetCellText(r, "AF").Replace('.', ','));
                     ds.endPeriodBalance.credit.sum = 0.0;
 
-                    r = ExcelUtils.GetRow(sheetData, i+=1);
+                    r = ExcelUtils.GetRow(sheetData, i += 1);
                     ds.startPeriodBalance.debit.amount = Convert.ToDouble(ExcelUtils.GetCellText(r, "K").Replace('.', ','));
                     ds.startPeriodBalance.credit.amount = Convert.ToDouble(ExcelUtils.GetCellText(r, "N").Replace('.', ','));
                     ds.turnover.debit.amount = Convert.ToDouble(ExcelUtils.GetCellText(r, "T").Replace('.', ','));
                     ds.turnover.credit.amount = Convert.ToDouble(ExcelUtils.GetCellText(r, "AA").Replace('.', ','));
                     ds.endPeriodBalance.debit.amount = Convert.ToDouble(ExcelUtils.GetCellText(r, "AF").Replace('.', ','));
                     ds.endPeriodBalance.credit.amount = 0;
-                   
+
 
                     datasets.Add(ds);
                 }
