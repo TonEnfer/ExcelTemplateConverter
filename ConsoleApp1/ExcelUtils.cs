@@ -86,14 +86,16 @@ namespace ConsoleApp1
         {
             Stylesheet styleSheet = null;
 
+
+
             Fonts fonts = new Fonts(
                 new Font( // Index 0 - default
-                    new FontSize() { Val = 14 },
+                    new FontSize() { Val = 10 },
                     new FontName() { Val = "Times New Roman" }
 
                 ),
                 new Font( // Index 1 - header
-                    new FontSize() { Val = 14 },
+                    new FontSize() { Val = 10 },
                     new Bold(),
                     new Color() { Rgb = "FFFFFF" },
                     new FontName() { Val = "Times New Roman" },

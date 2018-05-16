@@ -34,20 +34,20 @@ namespace ConsoleApp1
                     WorkbookPart workbookPart = document.AddWorkbookPart();
                     workbookPart.Workbook = new Workbook();
                     WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-                    worksheetPart.Worksheet = new Worksheet();
-
+                    Worksheet worksheet = worksheetPart.Worksheet = new Worksheet();
                     //worksheetPart.Worksheet.Save();
 
-                    Sheets sheets = workbookPart.Workbook.AppendChild<Sheets>(new Sheets());
+                    Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
 
-                    Sheet worksheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Report" };
-                    sheets.Append(worksheet);
+                    Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart),
+                        SheetId = 1, Name = "Report" };
+                    sheets.Append(sheet);
                     workbookPart.Workbook.Save();
 
                     WorkbookStylesPart stylePart = workbookPart.AddNewPart<WorkbookStylesPart>();
                     stylePart.Stylesheet = ExcelUtils.GenerateStylesheet();
                     stylePart.Stylesheet.Save();
-
+                    
                     SheetData sheetData = worksheetPart.Worksheet.AppendChild(new SheetData());
                     Row row = new Row();
                     MergeCells mergeCells;

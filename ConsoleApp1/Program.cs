@@ -26,7 +26,7 @@ namespace ConsoleApp1
                 oldReport2 = new Report(Path.Combine(path, fileName3));
 
             newReport.CreateExcelDoc();
-            newReport.WriteExcelDoc();
+           // newReport.WriteExcelDoc();
             List<Dataset> datasets1 = oldReport.ReadExcelDoc();
             List<Dataset> datasets2 = oldReport2.ReadExcelDoc();
 
