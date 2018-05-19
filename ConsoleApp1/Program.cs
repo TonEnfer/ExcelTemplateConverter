@@ -8,14 +8,15 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml;
 using System.Diagnostics;
+using ExcelTemplateConverterLib;
 
 namespace ConsoleApp1
 {
     class Program
     {
-        const string path = "E:\\";
+        const string path = "D:\\";
         const string fileName2 = "по счету 101.00 за 15 марта 2018 г_.xlsx";
-        const string fileName3 = "по счету 29 за 15 марта 2018 г_.xlsx";
+        const string fileName3 = "по счету 07 за 15 марта 2018 г_.xlsx";
         const string fileName = "test.xlsx";
 
 

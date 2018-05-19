@@ -8,7 +8,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml;
 using System.Diagnostics;
 
-namespace ConsoleApp1
+namespace ExcelTemplateConverterLib
 {
     public abstract class ExcelParser
     {

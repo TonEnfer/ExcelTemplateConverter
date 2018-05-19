@@ -10,16 +10,11 @@ using System.Diagnostics;
 using System.IO;
 using DocumentFormat.OpenXml.Validation;
 
-namespace ConsoleApp1
+namespace ExcelTemplateConverterLib
 {
     public sealed class Report
     {
-        string path = null;
-        public enum ReportFormat
-        {
-            ReportWhithInventoryNumber,
-            ReportWithoutInventoryNumber
-        }
+        private string path = null;
 
         public Report(string path)
         {
@@ -190,32 +185,31 @@ namespace ConsoleApp1
             }
         }
 
-        private Row CreateRowFromDataset(Dataset dataset)
+        private Row CreateRowFromDataset(Dataset dataset, uint FormatId = 1)
         {
             Row row = new Row();
 
             row.Append(
-                ExcelUtils.ConstructCell(dataset.Invoice, CellValues.String, 1),
-                ExcelUtils.ConstructCell(dataset.Name, CellValues.String, 1),
+                ExcelUtils.ConstructCell(dataset.Invoice, CellValues.String, FormatId),
+                ExcelUtils.ConstructCell(dataset.Name, CellValues.String, FormatId),
                 ExcelUtils.ConstructCell(dataset.InventoryNumber,
-                dataset.InventoryNumber.All(Char.IsDigit) ? CellValues.Number : CellValues.String,
-                1),
-                ExcelUtils.ConstructCell(dataset.KFO, CellValues.Number, 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.debit.sum).Replace(',', '.'), 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.debit.amount).Replace(',', '.'), 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.credit.sum).Replace(',', '.'), 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.credit.amount).Replace(',', '.'), 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.debit.sum).Replace(',', '.'), 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.debit.amount).Replace(',', '.'), 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.credit.sum).Replace(',', '.'), 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.credit.amount).Replace(',', '.'), 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.debit.sum).Replace(',', '.'), 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.debit.amount).Replace(',', '.'), 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.credit.sum).Replace(',', '.'), 1),
-                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.credit.amount).Replace(',', '.'), 1),
-                new Cell() { StyleIndex = 1 },
-                new Cell() { StyleIndex = 1 },
-                new Cell() { StyleIndex = 1 }
+                dataset.InventoryNumber.All(Char.IsDigit) ? CellValues.Number : CellValues.String, FormatId),
+                ExcelUtils.ConstructCell(dataset.KFO, CellValues.Number, FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.debit.sum).Replace(',', '.'), FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.debit.amount).Replace(',', '.'), FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.credit.sum).Replace(',', '.'), FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.startPeriodBalance.credit.amount).Replace(',', '.'), FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.debit.sum).Replace(',', '.'), FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.debit.amount).Replace(',', '.'), FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.credit.sum).Replace(',', '.'), FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.turnover.credit.amount).Replace(',', '.'), FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.debit.sum).Replace(',', '.'), FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.debit.amount).Replace(',', '.'), FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.credit.sum).Replace(',', '.'), FormatId),
+                ExcelUtils.ConstructCell(Convert.ToString(dataset.endPeriodBalance.credit.amount).Replace(',', '.'), FormatId),
+                new Cell() { StyleIndex = FormatId },
+                new Cell() { StyleIndex = FormatId },
+                new Cell() { StyleIndex = FormatId }
                 );
             return row;
         }
@@ -228,9 +222,12 @@ namespace ConsoleApp1
                 {
                     WorksheetPart worksheetPart = document.WorkbookPart.WorksheetParts.FirstOrDefault();
                     SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+                    Stylesheet stylesheet = document.WorkbookPart.WorkbookStylesPart.Stylesheet;
+                    CellStyles cellstyles = stylesheet.CellStyles;
+                    //var FormatId = ((CellStyle)cellstyles.ChildElements.ToList().Where(a=>((CellStyle)a).Name == "good").FirstOrDefault()).FormatId;
                     //datasets.Where(a => a.Name.Contains("Расходомер"))
                     foreach (var ds in datasets)
-                        sheetData.AppendChild(CreateRowFromDataset(ds));
+                        sheetData.AppendChild(CreateRowFromDataset(ds,3));
 
                     worksheetPart.Worksheet.Save();
 

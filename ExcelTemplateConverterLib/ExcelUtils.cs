@@ -8,7 +8,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml;
 using System.Text.RegularExpressions;
 
-namespace ConsoleApp1
+namespace ExcelTemplateConverterLib
 {
     public static class ExcelUtils
     {
@@ -119,10 +119,10 @@ namespace ConsoleApp1
                     new Fill(new PatternFill() { PatternType = PatternValues.Gray125 }), // Index 1 - default
                     new Fill(new PatternFill(new ForegroundColor { Rgb = new HexBinaryValue() { Value = "FF4472C4" } })
                     { PatternType = PatternValues.Solid }), // Index 2 - header
-                    new Fill(new PatternFill(new ForegroundColor { Rgb = new HexBinaryValue() { Value = "FFFF0000"} })
-                    { PatternType = PatternValues.Solid}),
+                    new Fill(new PatternFill(new ForegroundColor { Rgb = new HexBinaryValue() { Value = "FFFF0000" } })
+                    { PatternType = PatternValues.Solid }), //Index 3 - bad
                     new Fill(new PatternFill(new ForegroundColor { Rgb = new HexBinaryValue() { Value = "FF00FF00" } })
-                    { PatternType = PatternValues.Solid })
+                    { PatternType = PatternValues.Solid }) //index 4 - good
                 );
 
             Borders borders = new Borders(
@@ -134,20 +134,48 @@ namespace ConsoleApp1
                         new BottomBorder(new Color() { Auto = true }) { Style = BorderStyleValues.Thin },
                         new DiagonalBorder())
                 );
+            CellStyleFormats cellStyleFormats = new CellStyleFormats(
+                new CellFormat(),
+                new CellFormat()
+                {
+                    FontId = 1,
+                    FillId = 3,
+                    BorderId = 1,
+                    ApplyFill = true,
+                    FormatId = 0,
+                }, // 1
+                new CellFormat()
+                {
+                    FontId = 1,
+                    FillId = 4,
+                    BorderId = 1,
+                    ApplyFill = true,
+                    FormatId = 1
+                } // 2
+                );
 
             CellFormats cellFormats = new CellFormats(
-                    new CellFormat(), // default
-                    new CellFormat { FontId = 0, FillId = 0, BorderId = 1, ApplyBorder = true }, // body
+                    new CellFormat() { FormatId = 0 }, //0 default
+                    new CellFormat() { FontId = 0, FillId = 0, BorderId = 1, ApplyBorder = true }, //1 body
                     new CellFormat(
                         new Alignment()
                         {
                             Horizontal = HorizontalAlignmentValues.CenterContinuous,
                             Vertical = VerticalAlignmentValues.Center
                         })
-                    { FontId = 1, FillId = 2, BorderId = 1, ApplyFill = true } // header
+                    { FontId = 1, FillId = 2, BorderId = 1, ApplyFill = true }, //2 
+                    new CellFormat() {FormatId = 1 } // 3
+
+
+
+                );
+            CellStyles cellStyles = new CellStyles(
+                new CellStyle() { FormatId = 0 },
+                new CellStyle() { Name = "good", FormatId = 2, BuiltinId = 26 },
+                new CellStyle() { Name = "bad", FormatId = 1, BuiltinId = 27 }
                 );
 
-            styleSheet = new Stylesheet(fonts, fills, borders, cellFormats);
+            styleSheet = new Stylesheet(fonts, fills, borders, cellStyleFormats, cellFormats, cellStyles);
 
             return styleSheet;
         }
