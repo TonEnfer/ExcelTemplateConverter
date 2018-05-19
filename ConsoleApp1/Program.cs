@@ -26,14 +26,15 @@ namespace ConsoleApp1
                 oldReport = new Report(Path.Combine(path, fileName2)),
                 oldReport2 = new Report(Path.Combine(path, fileName3));
 
-            newReport.CreateExcelDoc();
+            //newReport.CreateExcelDoc();
             //List<Dataset> datasets1 = oldReport.ReadExcelDoc();
 
 
-            List<Dataset> datasets2 = oldReport2.ReadExcelDoc();
-            newReport.WriteDataToExcelDoc(datasets2);
+            //List<Dataset> datasets2 = oldReport2.ReadExcelDoc();
+            
+            //newReport.WriteDataToExcelDoc(datasets2);
             newReport.ExcelValidate();
-
+            List<Dataset> datasets3 = newReport.ReadExcelDoc();
             Console.ReadKey();
         }
     }

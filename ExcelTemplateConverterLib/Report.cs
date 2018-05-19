@@ -80,7 +80,7 @@ namespace ExcelTemplateConverterLib
                             worksheet.InsertAfter(mergeCells, worksheetPart.Worksheet.GetFirstChild<SheetData>());
                     }
                     row.Append(
-                        ExcelUtils.ConstructCell("Счёт", CellValues.String, 2),
+                        ExcelUtils.ConstructCell("Счет", CellValues.String, 2),
                         ExcelUtils.ConstructCell("Наименование", CellValues.String, 2),
                         ExcelUtils.ConstructCell("Инвентарный номер", CellValues.String, 2),
                         ExcelUtils.ConstructCell("КФО", CellValues.String, 2),
@@ -248,22 +248,24 @@ namespace ExcelTemplateConverterLib
             try
 
             {
-
-                OpenXmlValidator validator = new OpenXmlValidator();
-
-                int count = 0;
-
-                foreach (ValidationErrorInfo error in validator.Validate(SpreadsheetDocument.Open(path, true)))
+                using (SpreadsheetDocument document = SpreadsheetDocument.Open(path, true))
                 {
+                    OpenXmlValidator validator = new OpenXmlValidator();
 
-                    count++;
-                    Console.WriteLine("Error " + count);
-                    Console.WriteLine("Description: " + error.Description);
-                    Console.WriteLine("Path: " + error.Path.XPath);
-                    Console.WriteLine("Part: " + error.Part.Uri);
-                    Console.WriteLine("-------------------------------------------");
+                    int count = 0;
+
+                    foreach (ValidationErrorInfo error in validator.Validate(document))
+                    {
+
+                        count++;
+                        Console.WriteLine("Error " + count);
+                        Console.WriteLine("Description: " + error.Description);
+                        Console.WriteLine("Path: " + error.Path.XPath);
+                        Console.WriteLine("Part: " + error.Part.Uri);
+                        Console.WriteLine("-------------------------------------------");
+                    }
+                    Console.ReadKey();
                 }
-                Console.ReadKey();
             }
 
             catch (Exception ex)

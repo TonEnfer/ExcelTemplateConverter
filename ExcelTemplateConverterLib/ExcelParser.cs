@@ -46,9 +46,28 @@ namespace ExcelTemplateConverterLib
             SharedStringTablePart sharedStringPart = workbookPart.SharedStringTablePart;
 
             string startMarker = "Счет";
-            uint firstRow = FindRowIndexByMarker(document, startMarker);
+            int startMarkerID = ExcelUtils.FindStringId(sharedStringPart, startMarker);
+            uint firstRow = 1;
+            if (startMarkerID != -100)
+                firstRow = FindRowIndexByMarker(document, startMarker);
             string formatMarker = "КФО";
             int formatMarkerID = ExcelUtils.FindStringId(sharedStringPart, formatMarker);
+            if (startMarkerID != -100 || formatMarkerID != -100)
+            {
+                Row r = ExcelUtils.GetRow(sheetData, 1);
+                if (Convert.ToInt32(ExcelUtils.GetCell(r, "A").CellValue.Text) == startMarkerID ||
+                    Convert.ToInt32(ExcelUtils.GetCell(r, "D").CellValue.Text) == formatMarkerID)
+                    return new ParserNewFormat();
+            }
+            else
+            {
+                Row r = ExcelUtils.GetRow(sheetData, 1);
+                if (ExcelUtils.GetCell(r, "A").DataType == CellValues.String &&
+                    ExcelUtils.GetCell(r, "A").CellValue.Text == startMarker ||
+                    ExcelUtils.GetCell(r, "D").DataType == CellValues.String &&
+                    ExcelUtils.GetCell(r, "D").CellValue.Text == formatMarker)
+                    return new ParserNewFormat();
+            }
             if (formatMarkerID != -100)
                 if (Convert.ToInt32(ExcelUtils.GetRow(sheetData, firstRow + 3).GetFirstChild<Cell>().CellValue.Text) == formatMarkerID)
                     return new ParserWhithInventoryNumber();
@@ -60,7 +79,62 @@ namespace ExcelTemplateConverterLib
     {
         public override List<Dataset> Parse(SpreadsheetDocument document)
         {
-            throw new NotImplementedException();
+            List<Dataset> datasets = null;
+            try
+            {
+                WorkbookPart workbookPart = document.WorkbookPart;
+                WorksheetPart worksheetPart = workbookPart.WorksheetParts.FirstOrDefault();
+                Sheets sheets = workbookPart.Workbook.Sheets;
+                Sheet sheet = sheets.GetFirstChild<Sheet>();
+
+                SheetData sheetData = worksheetPart.Worksheet.Descendants<SheetData>().FirstOrDefault();
+                SharedStringTablePart sharedStringPart = workbookPart.SharedStringTablePart;
+
+                string startMarker = "Счет";
+                uint firstRow = 4;
+                int lastRow = sheetData.Elements<Row>().Count();
+
+                datasets = new List<Dataset>();
+
+                for (uint i = firstRow; i < lastRow+1; i += 1)
+                {
+                    Console.WriteLine("Строка {0}", i);
+                    Dataset ds = new Dataset();
+                    Row r = ExcelUtils.GetRow(sheetData, i);
+                    var q = r.Elements<Cell>().Where(c => c.CellValue != null).ToList();
+                    ds.Invoice = ExcelUtils.FindStringValue(sharedStringPart, Convert.ToInt32(ExcelUtils.GetCellText(r, "A")));
+                    ds.Name = ExcelUtils.FindStringValue(sharedStringPart, Convert.ToInt32(ExcelUtils.GetCellText(r, "B")));
+                    ds.InventoryNumber = ExcelUtils.GetCell(r, "C").DataType == "s" ?
+                       ExcelUtils.FindStringValue(sharedStringPart, Convert.ToInt32(ExcelUtils.GetCellText(r, "C"))).Trim(' ') :
+                       ExcelUtils.GetCellText(r, "C").Trim(' ');
+                    ds.KFO = ExcelUtils.GetCellText(r, "D").Trim(' ');
+                    ds.startPeriodBalance.debit.sum = Convert.ToDouble(ExcelUtils.GetCellText(r, "E").Replace('.', ','));
+                    ds.startPeriodBalance.debit.amount = Convert.ToInt32(ExcelUtils.GetCellText(r, "F").Replace('.', ','));
+                    ds.startPeriodBalance.credit.sum = Convert.ToDouble(ExcelUtils.GetCellText(r, "G").Replace('.', ','));
+                    ds.startPeriodBalance.credit.amount = Convert.ToInt32(ExcelUtils.GetCellText(r, "H").Replace('.', ','));
+                    ds.turnover.debit.sum = Convert.ToDouble(ExcelUtils.GetCellText(r, "I").Replace('.', ','));
+                    ds.turnover.debit.amount = Convert.ToInt32(ExcelUtils.GetCellText(r, "J").Replace('.', ','));
+                    ds.turnover.credit.sum = Convert.ToDouble(ExcelUtils.GetCellText(r, "K").Replace('.', ','));
+                    ds.turnover.credit.amount = Convert.ToInt32(ExcelUtils.GetCellText(r, "L").Replace('.', ','));
+                    ds.endPeriodBalance.debit.sum = Convert.ToDouble(ExcelUtils.GetCellText(r, "M").Replace('.', ','));
+                    ds.endPeriodBalance.debit.amount = Convert.ToInt32(ExcelUtils.GetCellText(r, "N").Replace('.', ','));
+                    ds.endPeriodBalance.credit.sum = Convert.ToInt32(ExcelUtils.GetCellText(r, "O").Replace('.', ','));
+                    ds.endPeriodBalance.credit.amount = Convert.ToInt32(ExcelUtils.GetCellText(r, "P").Replace('.', ','));
+
+                    datasets.Add(ds);
+                }
+                return datasets;
+            }
+            catch (Exception e)
+            {
+                Debug.Print(e.Message);
+                Debug.Print(e.StackTrace);
+                return null;
+            }
+            finally
+            {
+                GC.Collect();
+            }
         }
     }
 
@@ -112,14 +186,14 @@ namespace ExcelTemplateConverterLib
                     ds.turnover.credit.amount = Convert.ToInt32(ExcelUtils.GetCellText(r, "AA"));
                     ds.endPeriodBalance.debit.amount = Convert.ToInt32(ExcelUtils.GetCellText(r, "AF"));
                     ds.endPeriodBalance.credit.amount = 0;
-                    
+
                     r = ExcelUtils.GetRow(sheetData, i += 1);
                     ds.InventoryNumber = ExcelUtils.GetCell(r, "A").DataType == "s" ?
                         ExcelUtils.FindStringValue(sharedStringPart, Convert.ToInt32(ExcelUtils.GetCellText(r, "A"))).Trim(' ') :
                         ExcelUtils.GetCellText(r, "A").Trim(' ');
 
                     r = ExcelUtils.GetRow(sheetData, i += 2);
-                    ds.KFO = ExcelUtils.GetCellText(r, "A").Trim(' ') ;
+                    ds.KFO = ExcelUtils.GetCellText(r, "A").Trim(' ');
                     datasets.Add(ds);
                 }
                 return datasets;

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{258FA296-9460-4DD7-83F3-A72DE0C43C4A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "ConsoleApp1\TestApp.csproj", "{258FA296-9460-4DD7-83F3-A72DE0C43C4A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExcelTemplateConverterLib", "ExcelTemplateConverterLib\ExcelTemplateConverterLib.csproj", "{4AD63973-135F-4DBF-924C-31372A7CC59A}"
 EndProject
